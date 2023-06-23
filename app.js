@@ -1,0 +1,25 @@
+const express = require("express");
+const app = express();
+const todos = [];
+
+app.use(express.static("public"));
+
+app.use(express.text());
+
+app.get("/todos", (req, res) => {
+  res.send(todos);
+  console.log("This is a GET request");
+});
+
+app.post("/", (req, res) => {
+  todos.push(req.body);
+  console.log("Created todo item =", req.body);
+});
+
+app.delete("/", (req, res) => {
+  console.log("Deleted the todo item at index", req.body);
+});
+
+app.listen(3000, () => {
+  console.log("Express listening at port 3000");
+});
