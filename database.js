@@ -10,6 +10,8 @@ const client = new Client({
   database: "todos",
 });
 
+module.exports = client;
+
 client.connect();
 
 client.query("select * from todos", (err, result) => {

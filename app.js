@@ -1,4 +1,6 @@
 const express = require("express");
+// const client = require("./database");
+
 const app = express();
 const todos = [];
 
@@ -23,3 +25,12 @@ app.delete("/", (req, res) => {
 app.listen(3000, () => {
   console.log("Express listening at port 3000");
 });
+
+// client.connect();
+
+// client.query("select * from todos", (err, result) => {
+//   if (!err) {
+//     console.log(result.rows);
+//   }
+//   client.end();
+// });
