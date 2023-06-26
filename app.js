@@ -1,36 +1,48 @@
 const express = require("express");
-// const client = require("./database");
+const pool = require("./models/database");
 
 const app = express();
-const todos = [];
 
 app.use(express.static("public"));
 
-app.use(express.text());
+app.use(express.json());
 
 app.get("/todos", (req, res) => {
-  res.send(todos);
-  console.log("This is a GET request");
+  pool.query("SELECT * FROM todos", (err, result) => {
+    if (!err) {
+      // console.log(result.rows);
+      res.send(result.rows);
+    } else {
+      console.log("Error =", err);
+    }
+  });
 });
 
-app.post("/", (req, res) => {
-  todos.push(req.body);
-  console.log("Created todo item =", req.body);
+app.post("/todos", (req, res) => {
+  // console.log("req =", req.body);
+  const text = req.body.item;
+  pool.query("INSERT INTO todos(item) VALUES ($1)", [text], (err) => {
+    if (!err) {
+      res.status(201).json("Todo item created");
+    } else {
+      // res.send(err)
+      console.log("Error =", err);
+    }
+  });
 });
 
-app.delete("/", (req, res) => {
-  console.log("Deleted the todo item at index", req.body);
+app.delete("/todos", (req, res) => {
+  const id = req.id;
+  console.log("id =", id);
+  pool.query("DELETE FROM todos WHERE id = $1", [id], (err) => {
+    if (!err) {
+      res.send("Todo item deleted");
+    } else {
+      console.log("Error =", err);
+    }
+  });
 });
 
 app.listen(3000, () => {
   console.log("Express listening at port 3000");
 });
-
-// client.connect();
-
-// client.query("select * from todos", (err, result) => {
-//   if (!err) {
-//     console.log(result.rows);
-//   }
-//   client.end();
-// });

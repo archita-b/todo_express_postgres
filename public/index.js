@@ -1,20 +1,23 @@
 let todos = [];
+fetch("/todos", {
+  method: "GET",
+})
+  .then((res) => {
+    return res.json();
+  })
+  .then((data) => {
+    todos = data;
+    displayTodos();
+    // console.log("todo_fetch =", todos);
+  });
 
-const storedTodos = localStorage.getItem("todos");
-if (storedTodos !== null) {
-  todos = JSON.parse(storedTodos);
-}
-
-function saveToLocalStorage() {
-  localStorage.setItem("todos", JSON.stringify(todos));
-}
-
-displayTodos();
+// displayTodos();
 
 const addBtn = document.querySelector("#add-btn");
 addBtn.onclick = addTodo;
 
 function addTodo() {
+  // console.log("todos =", todos);
   const todoInput = document.querySelector(".todoInput");
   const todoText = todoInput.value.trim();
   if (todoText === "") {
@@ -22,23 +25,30 @@ function addTodo() {
     return;
   }
   const todo = {
-    text: todoText,
+    item: todoText,
     completed: false,
   };
-  todos.push(todo);
   todoInput.value = "";
-  saveToLocalStorage();
-  displayTodos();
 
-  fetch("/", {
+  fetch("/todos", {
     method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
     body: JSON.stringify(todo),
-  }).then((res) => {
-    res.json;
-  });
+  })
+    .then((res) => {
+      return res.json();
+    })
+    .then((data) => {
+      todos.push(todo);
+      displayTodos();
+      // console.log(data);
+    });
 }
 
 function displayTodos() {
+  // console.log(todos);
   const todoList = document.querySelector(".todoList");
   todoList.textContent = "";
 
@@ -53,16 +63,6 @@ function displayTodos() {
     todoItem.appendChild(createDeleteBtn(todo, id));
 
     todoList.appendChild(todoItem);
-
-    fetch("/todos", {
-      method: "GET",
-    })
-      .then((res) => {
-        res.json;
-      })
-      .then((data) => {
-        console.log(data);
-      });
   });
 }
 
@@ -75,8 +75,9 @@ function createCheckbox(todo, id) {
 }
 
 function createTodoText(todo, id) {
+  // console.log("todo =", todo);
   const todoTextSpan = document.createElement("span");
-  todoTextSpan.textContent = todo.text;
+  todoTextSpan.textContent = todo.item;
   if (todo.completed) {
     todoTextSpan.classList.add("completed");
   }
@@ -92,18 +93,20 @@ function createDeleteBtn(todo, id) {
 
 function toggleCompleted(id) {
   todos[id].completed = !todos[id].completed;
-  saveToLocalStorage();
   displayTodos();
 }
 
 function deleteTodo(id) {
   todos.splice(id, 1);
-  fetch("/", {
+  fetch("/todos", {
     method: "DELETE",
-    body: JSON.stringify(id),
-  }).then((res) => {
-    res.json;
-  });
-  saveToLocalStorage();
-  displayTodos();
+  })
+    .then((res) => {
+      return res;
+    })
+    .then((data) => {
+      // todos.splice(id, 1);
+      displayTodos();
+      console.log(todos);
+    });
 }
