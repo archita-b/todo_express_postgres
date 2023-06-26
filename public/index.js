@@ -8,16 +8,12 @@ fetch("/todos", {
   .then((data) => {
     todos = data;
     displayTodos();
-    // console.log("todo_fetch =", todos);
   });
-
-// displayTodos();
 
 const addBtn = document.querySelector("#add-btn");
 addBtn.onclick = addTodo;
 
 function addTodo() {
-  // console.log("todos =", todos);
   const todoInput = document.querySelector(".todoInput");
   const todoText = todoInput.value.trim();
   if (todoText === "") {
@@ -41,26 +37,24 @@ function addTodo() {
       return res.json();
     })
     .then((data) => {
-      todos.push(todo);
+      todos.push(data);
       displayTodos();
-      // console.log(data);
     });
 }
 
 function displayTodos() {
-  // console.log(todos);
   const todoList = document.querySelector(".todoList");
   todoList.textContent = "";
 
-  todos.forEach((todo, id) => {
+  todos.forEach((todo) => {
     const todoItem = document.createElement("div");
     todoItem.className = "todo-item";
 
-    todoItem.appendChild(createCheckbox(todo, id));
+    todoItem.appendChild(createCheckbox(todo));
 
-    todoItem.appendChild(createTodoText(todo, id));
+    todoItem.appendChild(createTodoText(todo));
 
-    todoItem.appendChild(createDeleteBtn(todo, id));
+    todoItem.appendChild(createDeleteBtn(todo));
 
     todoList.appendChild(todoItem);
   });
@@ -74,8 +68,7 @@ function createCheckbox(todo, id) {
   return checkbox;
 }
 
-function createTodoText(todo, id) {
-  // console.log("todo =", todo);
+function createTodoText(todo) {
   const todoTextSpan = document.createElement("span");
   todoTextSpan.textContent = todo.item;
   if (todo.completed) {
@@ -84,10 +77,10 @@ function createTodoText(todo, id) {
   return todoTextSpan;
 }
 
-function createDeleteBtn(todo, id) {
+function createDeleteBtn(todo) {
   const deleteBtn = document.createElement("button");
   deleteBtn.textContent = "\u00d7";
-  deleteBtn.onclick = () => deleteTodo(id);
+  deleteBtn.onclick = () => deleteTodo(todo.id);
   return deleteBtn;
 }
 
@@ -97,16 +90,16 @@ function toggleCompleted(id) {
 }
 
 function deleteTodo(id) {
-  todos.splice(id, 1);
-  fetch("/todos", {
+  fetch("/todos/" + id, {
     method: "DELETE",
   })
     .then((res) => {
-      return res;
+      return res.json();
     })
     .then((data) => {
-      // todos.splice(id, 1);
+      todos = todos.filter((element) => {
+        return element.id !== data.id;
+      });
       displayTodos();
-      console.log(todos);
     });
 }
