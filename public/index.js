@@ -60,11 +60,11 @@ function displayTodos() {
   });
 }
 
-function createCheckbox(todo, id) {
+function createCheckbox(todo) {
   const checkbox = document.createElement("input");
   checkbox.setAttribute("type", "checkbox");
   checkbox.checked = todo.completed;
-  checkbox.onclick = () => toggleCompleted(id);
+  checkbox.onclick = () => toggleCompleted(todo); //changed
   return checkbox;
 }
 
@@ -84,9 +84,21 @@ function createDeleteBtn(todo) {
   return deleteBtn;
 }
 
-function toggleCompleted(id) {
-  todos[id].completed = !todos[id].completed;
-  displayTodos();
+function toggleCompleted(todo) {
+  todo.completed = !todo.completed; //changed
+  fetch("/todos", {
+    method: "PATCH",
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify(todo),
+  })
+    .then((res) => res)
+    .then((data) => {
+      // todos.push(data);
+      displayTodos();
+    });
+  // displayTodos();
 }
 
 function deleteTodo(id) {
