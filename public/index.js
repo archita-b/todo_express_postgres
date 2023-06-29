@@ -22,6 +22,9 @@ function addTodo() {
   }
   const todo = {
     item: todoText,
+    priority: "none",
+    // date: new Date(),
+    notes: "",
     completed: false,
   };
   todoInput.value = "";
@@ -54,6 +57,8 @@ function displayTodos() {
 
     todoItem.appendChild(createTodoText(todo));
 
+    todoItem.appendChild(createTodoProps(todo));
+
     todoItem.appendChild(createDeleteBtn(todo));
 
     todoList.appendChild(todoItem);
@@ -64,7 +69,7 @@ function createCheckbox(todo) {
   const checkbox = document.createElement("input");
   checkbox.setAttribute("type", "checkbox");
   checkbox.checked = todo.completed;
-  checkbox.onclick = () => toggleCompleted(todo); //changed
+  checkbox.onclick = () => toggleCompleted(todo);
   return checkbox;
 }
 
@@ -77,6 +82,76 @@ function createTodoText(todo) {
   return todoTextSpan;
 }
 
+function createTodoProps(todo) {
+  const props = document.createElement("div");
+  props.className = "todo-props";
+
+  props.appendChild(addTextarea(todo));
+  props.appendChild(addPriority(todo));
+  // props.appendChild(addDate(todo));
+  props.appendChild(addEditBtn(todo));
+
+  return props;
+}
+
+function addTextarea(todo) {
+  const notes = document.createElement("input");
+  notes.setAttribute("type", "textarea");
+  const todoId = todo.id;
+  notes.id = todoId;
+  notes.value = todo.notes;
+  return notes;
+}
+
+function addPriority(todo) {
+  const priorityMenu = document.createElement("select");
+  priorityMenu.className = "priority";
+  const priorityOptions = ["none", "low", "high"];
+  priorityMenu.value = todo.priority;
+
+  priorityOptions.forEach((element) => {
+    const options = document.createElement("option");
+    options.textContent = element;
+    priorityMenu.appendChild(options);
+  });
+  return priorityMenu;
+}
+
+function addDate(todo) {
+  const date = document.createElement("input");
+  date.setAttribute("type", "date");
+  return date;
+}
+
+function addEditBtn(todo) {
+  const editBtn = document.createElement("button");
+  editBtn.textContent = "Edit";
+  // editBtn.onclick = () => editTodo(todo);
+  editBtn.addEventListener("click", () => {
+    editTodo(todo);
+    // console.log("edit todo =", todo);
+  });
+  return editBtn;
+}
+
+function editTodo(todo) {
+  const notes = document.getElementById(todo.id);
+  todo.notes = notes.value;
+  // todo.priority = priorityMenu.value;
+  // console.log("notes =", notes.value);
+  fetch("/todos", {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify(todo),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      displayTodos();
+    });
+}
+
 function createDeleteBtn(todo) {
   const deleteBtn = document.createElement("button");
   deleteBtn.textContent = "\u00d7";
@@ -85,7 +160,7 @@ function createDeleteBtn(todo) {
 }
 
 function toggleCompleted(todo) {
-  todo.completed = !todo.completed; //changed
+  todo.completed = !todo.completed;
   fetch("/todos", {
     method: "PATCH",
     headers: {
@@ -95,10 +170,8 @@ function toggleCompleted(todo) {
   })
     .then((res) => res)
     .then((data) => {
-      // todos.push(data);
       displayTodos();
     });
-  // displayTodos();
 }
 
 function deleteTodo(id) {

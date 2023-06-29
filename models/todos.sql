@@ -5,15 +5,17 @@
 CREATE TABLE todos (
     id SERIAL PRIMARY KEY,
     item TEXT NOT NULL,
+    priority TEXT NOT NULL,
+    notes TEXT,
     completed boolean NOT NULL 
 );
 
 -- Populating the table
-INSERT INTO todos(item, completed)
+INSERT INTO todos(item,priority,notes, completed)
 VALUES
-('todo1', false),
-('todo2', false),
-('todo3', false);
+('todo1','none', 'notes1',false),
+('todo2','none','notes2',false),
+('todo3','none','notes3',false);
 
 -- Retrieving data from table
 SELECT * FROM todos;
