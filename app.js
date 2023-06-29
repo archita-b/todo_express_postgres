@@ -19,15 +19,11 @@ app.get("/todos", (req, res) => {
 });
 
 app.post("/todos", (req, res) => {
-  const text = req.body.item;
-  const priority = req.body.priority;
-  // const date = req.body.date;
-  const notes = req.body.notes;
-  const completed = req.body.completed;
+  const { item, priority, notes, completed } = req.body;
 
   db.query(
     "INSERT INTO todos(item,priority,notes,completed) VALUES ($1,$2,$3,$4) RETURNING *",
-    [text, priority, notes, completed],
+    [item, priority, notes, completed],
     (err, result) => {
       if (!err) {
         res.status(201).json(result.rows[0]);
@@ -40,11 +36,8 @@ app.post("/todos", (req, res) => {
 });
 
 app.put("/todos", (req, res) => {
-  // console.log("request =", req.body);
-  const id = req.body.id;
-  const notes = req.body.notes;
-  const priority = req.body.priority;
-  const date = req.body.date;
+  const { id, notes, priority } = req.body;
+
   db.query(
     "UPDATE todos SET priority=$2, notes=$3 WHERE id=$1 RETURNING *",
     [id, priority, notes],
@@ -60,12 +53,11 @@ app.put("/todos", (req, res) => {
 });
 
 app.patch("/todos", (req, res) => {
-  const id = req.body.id;
-  const bool = req.body.completed;
+  const { id, completed } = req.body;
 
   db.query(
     "UPDATE todos SET completed=$2 WHERE id = $1 RETURNING *",
-    [id, bool],
+    [id, completed],
     (err, result) => {
       if (!err) {
         res.status(200).send("Todo checked item updated");
