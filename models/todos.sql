@@ -1,31 +1,38 @@
 -- From psql console connecting to a certain database
 \c todos
 
+-- Listing all the databases 
+\l
+
+-- Listing all the table in the path
+\dt
+
 -- Creating a table(database) from psql console
-CREATE TABLE todos (
+CREATE TABLE todos_table (
     id SERIAL PRIMARY KEY,
     item TEXT NOT NULL,
     priority TEXT NOT NULL,
     notes TEXT,
+    duedate date,
     completed boolean NOT NULL 
 );
 
 -- Populating the table
-INSERT INTO todos(item,priority,notes, completed)
+INSERT INTO todos_table (item,priority,notes, completed)
 VALUES
-('todo1','none', 'notes1',false),
+('todo1','none','notes1',false),
 ('todo2','none','notes2',false),
 ('todo3','none','notes3',false);
 
 -- Retrieving data from table
-SELECT * FROM todos;
-SELECT <column> FROM todos WHERE <condition>;
+SELECT * FROM <table_name>;
+SELECT <column> FROM <table_name> WHERE <condition>;
 
 -- Updating the value of an already present query record
-UPDATE todos SET <columnN> = <valueN> WHERE <condition>;
+UPDATE <table_name> SET <columnN> = <valueN> WHERE <condition>;
 
 -- Deleting recods present in the table
-DELETE FROM todos WHERE <condition>;
+DELETE FROM <table_name> WHERE <condition>;
 
 -- Deleting a table(database) from psql console
 DROP TABLE <table_name>;

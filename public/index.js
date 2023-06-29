@@ -23,8 +23,8 @@ function addTodo() {
   const todo = {
     item: todoText,
     priority: "none",
-    // date: new Date(),
     notes: "",
+    duedate: null,
     completed: false,
   };
   todoInput.value = "";
@@ -88,7 +88,7 @@ function createTodoProps(todo) {
 
   props.appendChild(addTextarea(todo));
   props.appendChild(addPriority(todo));
-  // props.appendChild(addDate(todo));
+  props.appendChild(addDate(todo));
   props.appendChild(addEditBtn(todo));
 
   return props;
@@ -97,7 +97,7 @@ function createTodoProps(todo) {
 function addTextarea(todo) {
   const notes = document.createElement("input");
   notes.setAttribute("type", "textarea");
-  notes.id = todo.id;
+  notes.id = "notes" + todo.id;
   notes.value = todo.notes;
   return notes;
 }
@@ -107,7 +107,7 @@ function addPriority(todo) {
   priorityMenu.className = "priority";
   const priorityOptions = ["none", "low", "high"];
 
-  priorityMenu.id = String(todo.id) + todo.id;
+  priorityMenu.id = "priority" + todo.id;
 
   priorityOptions.forEach((element) => {
     const options = document.createElement("option");
@@ -121,9 +121,11 @@ function addPriority(todo) {
 }
 
 function addDate(todo) {
-  const date = document.createElement("input");
-  date.setAttribute("type", "date");
-  return date;
+  const duedate = document.createElement("input");
+  duedate.setAttribute("type", "date");
+  duedate.id = "date" + todo.id;
+  duedate.value = todo.duedate;
+  return duedate;
 }
 
 function addEditBtn(todo) {
@@ -134,12 +136,17 @@ function addEditBtn(todo) {
 }
 
 function editTodo(todo) {
-  const notes = document.getElementById(todo.id);
+  const notesID = "notes" + todo.id;
+  const notes = document.getElementById(notesID);
   todo.notes = notes.value;
 
-  const priorityID = todo.id + String(todo.id);
+  const priorityID = "priority" + todo.id;
   const priority = document.getElementById(priorityID);
   todo.priority = priority.value;
+
+  const duedateID = "date" + todo.id;
+  const duedate = document.getElementById(duedateID);
+  todo.duedate = duedate.value;
 
   fetch("/todos", {
     method: "PUT",

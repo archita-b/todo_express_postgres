@@ -8,7 +8,7 @@ app.use(express.static("public"));
 app.use(express.json());
 
 app.get("/todos", (req, res) => {
-  db.query("SELECT * FROM todos", (err, result) => {
+  db.query("SELECT * FROM todos_table", (err, result) => {
     if (!err) {
       res.status(200).json(result.rows);
     } else {
@@ -19,11 +19,11 @@ app.get("/todos", (req, res) => {
 });
 
 app.post("/todos", (req, res) => {
-  const { item, priority, notes, completed } = req.body;
+  const { item, priority, notes, duedate, completed } = req.body;
 
   db.query(
-    "INSERT INTO todos(item,priority,notes,completed) VALUES ($1,$2,$3,$4) RETURNING *",
-    [item, priority, notes, completed],
+    "INSERT INTO todos_table(item,priority,notes,duedate,completed) VALUES ($1,$2,$3,$4,$5) RETURNING *",
+    [item, priority, notes, duedate, completed],
     (err, result) => {
       if (!err) {
         res.status(201).json(result.rows[0]);
@@ -36,11 +36,12 @@ app.post("/todos", (req, res) => {
 });
 
 app.put("/todos", (req, res) => {
-  const { id, notes, priority } = req.body;
+  // console.log("request=", req.body);
+  const { id, notes, priority, duedate } = req.body;
 
   db.query(
-    "UPDATE todos SET priority=$2, notes=$3 WHERE id=$1 RETURNING *",
-    [id, priority, notes],
+    "UPDATE todos_table SET priority=$2, notes=$3, duedate=$4 WHERE id=$1 RETURNING *",
+    [id, priority, notes, duedate],
     (err, result) => {
       if (!err) {
         res.status(200).json(result.rows[0]);
@@ -56,7 +57,7 @@ app.patch("/todos", (req, res) => {
   const { id, completed } = req.body;
 
   db.query(
-    "UPDATE todos SET completed=$2 WHERE id = $1 RETURNING *",
+    "UPDATE todos_table SET completed=$2 WHERE id = $1 RETURNING *",
     [id, completed],
     (err, result) => {
       if (!err) {
@@ -72,7 +73,7 @@ app.patch("/todos", (req, res) => {
 app.delete("/todos/:id", (req, res) => {
   const todoId = req.params["id"];
   db.query(
-    "DELETE FROM todos WHERE id = $1 RETURNING *",
+    "DELETE FROM todos_table WHERE id = $1 RETURNING *",
     [todoId],
     (err, result) => {
       if (!err) {
