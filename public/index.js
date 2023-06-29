@@ -97,8 +97,7 @@ function createTodoProps(todo) {
 function addTextarea(todo) {
   const notes = document.createElement("input");
   notes.setAttribute("type", "textarea");
-  const todoId = todo.id;
-  notes.id = todoId;
+  notes.id = todo.id;
   notes.value = todo.notes;
   return notes;
 }
@@ -107,13 +106,17 @@ function addPriority(todo) {
   const priorityMenu = document.createElement("select");
   priorityMenu.className = "priority";
   const priorityOptions = ["none", "low", "high"];
-  priorityMenu.value = todo.priority;
+
+  priorityMenu.id = String(todo.id) + todo.id;
 
   priorityOptions.forEach((element) => {
     const options = document.createElement("option");
     options.textContent = element;
     priorityMenu.appendChild(options);
   });
+
+  priorityMenu.value = todo.priority;
+
   return priorityMenu;
 }
 
@@ -126,19 +129,18 @@ function addDate(todo) {
 function addEditBtn(todo) {
   const editBtn = document.createElement("button");
   editBtn.textContent = "Edit";
-  // editBtn.onclick = () => editTodo(todo);
-  editBtn.addEventListener("click", () => {
-    editTodo(todo);
-    // console.log("edit todo =", todo);
-  });
+  editBtn.onclick = () => editTodo(todo);
   return editBtn;
 }
 
 function editTodo(todo) {
   const notes = document.getElementById(todo.id);
   todo.notes = notes.value;
-  // todo.priority = priorityMenu.value;
-  // console.log("notes =", notes.value);
+
+  const priorityID = todo.id + String(todo.id);
+  const priority = document.getElementById(priorityID);
+  todo.priority = priority.value;
+
   fetch("/todos", {
     method: "PUT",
     headers: {
