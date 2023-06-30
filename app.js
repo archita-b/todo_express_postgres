@@ -36,7 +36,7 @@ app.post("/todos", (req, res) => {
 });
 
 app.put("/todos", (req, res) => {
-  // console.log("request=", req.body);
+  console.log("request=", req.body);
   const { id, notes, priority, duedate } = req.body;
 
   db.query(

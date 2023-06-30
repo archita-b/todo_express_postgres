@@ -6,7 +6,11 @@ fetch("/todos", {
     return res.json();
   })
   .then((data) => {
+    data.map((element) => {
+      return (element.duedate = element.duedate.slice(0, 10));
+    });
     todos = data;
+    console.log("todos get=", todos);
     displayTodos();
   });
 
@@ -125,6 +129,7 @@ function addDate(todo) {
   duedate.setAttribute("type", "date");
   duedate.id = "date" + todo.id;
   duedate.value = todo.duedate;
+  // console.log("todo =", todo);
   return duedate;
 }
 
@@ -147,6 +152,7 @@ function editTodo(todo) {
   const duedateID = "date" + todo.id;
   const duedate = document.getElementById(duedateID);
   todo.duedate = duedate.value;
+  console.log("todo edit=", todo);
 
   fetch("/todos", {
     method: "PUT",
