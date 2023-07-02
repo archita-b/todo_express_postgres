@@ -11,9 +11,9 @@
 CREATE TABLE todos_table (
     id SERIAL PRIMARY KEY,
     item TEXT NOT NULL,
-    priority TEXT NOT NULL,
+    priority TEXT,
     notes TEXT,
-    duedate date,
+    duedate TIMESTAMP,
     completed boolean NOT NULL 
 );
 

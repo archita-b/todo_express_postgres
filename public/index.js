@@ -7,10 +7,13 @@ fetch("/todos", {
   })
   .then((data) => {
     data.map((element) => {
-      return (element.duedate = element.duedate.slice(0, 10));
+      if (element.duedate !== null) {
+        const match = element.duedate.match(/T/);
+        const matchIndex = match.index;
+        return (element.duedate = element.duedate.slice(0, matchIndex));
+      }
     });
     todos = data;
-    console.log("todos get=", todos);
     displayTodos();
   });
 
@@ -24,11 +27,12 @@ function addTodo() {
     alert("You must write something!");
     return;
   }
+
   const todo = {
     item: todoText,
     priority: "none",
     notes: "",
-    duedate: null,
+    duedate: null, //Date.now(),
     completed: false,
   };
   todoInput.value = "";
@@ -93,7 +97,7 @@ function createTodoProps(todo) {
   props.appendChild(addTextarea(todo));
   props.appendChild(addPriority(todo));
   props.appendChild(addDate(todo));
-  props.appendChild(addEditBtn(todo));
+  props.appendChild(addSubmitBtn(todo));
 
   return props;
 }
@@ -129,18 +133,17 @@ function addDate(todo) {
   duedate.setAttribute("type", "date");
   duedate.id = "date" + todo.id;
   duedate.value = todo.duedate;
-  // console.log("todo =", todo);
   return duedate;
 }
 
-function addEditBtn(todo) {
+function addSubmitBtn(todo) {
   const editBtn = document.createElement("button");
-  editBtn.textContent = "Edit";
-  editBtn.onclick = () => editTodo(todo);
+  editBtn.textContent = "Submit";
+  editBtn.onclick = () => submitTodo(todo);
   return editBtn;
 }
 
-function editTodo(todo) {
+function submitTodo(todo) {
   const notesID = "notes" + todo.id;
   const notes = document.getElementById(notesID);
   todo.notes = notes.value;
@@ -152,7 +155,6 @@ function editTodo(todo) {
   const duedateID = "date" + todo.id;
   const duedate = document.getElementById(duedateID);
   todo.duedate = duedate.value;
-  console.log("todo edit=", todo);
 
   fetch("/todos", {
     method: "PUT",
@@ -169,6 +171,7 @@ function editTodo(todo) {
 
 function createDeleteBtn(todo) {
   const deleteBtn = document.createElement("button");
+  deleteBtn.id = "del-btn";
   deleteBtn.textContent = "\u00d7";
   deleteBtn.onclick = () => deleteTodo(todo.id);
   return deleteBtn;
@@ -176,14 +179,14 @@ function createDeleteBtn(todo) {
 
 function toggleCompleted(todo) {
   todo.completed = !todo.completed;
-  fetch("/todos", {
-    method: "PATCH",
+  fetch("/todos/checked", {
+    method: "PUT",
     headers: {
       "Content-type": "application/json",
     },
     body: JSON.stringify(todo),
   })
-    .then((res) => res)
+    .then((res) => res.json())
     .then((data) => {
       displayTodos();
     });
@@ -198,7 +201,7 @@ function deleteTodo(id) {
     })
     .then((data) => {
       todos = todos.filter((element) => {
-        return element.id !== data.id;
+        return element.id !== id;
       });
       displayTodos();
     });
