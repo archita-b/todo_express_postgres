@@ -2,9 +2,7 @@ let todos = [];
 fetch("/todos", {
   method: "GET",
 })
-  .then((res) => {
-    return res.json();
-  })
+  .then((res) => res.json())
   .then((data) => {
     data.map((element) => {
       if (element.duedate !== null) {
@@ -32,7 +30,7 @@ function addTodo() {
     item: todoText,
     priority: "none",
     notes: "",
-    duedate: null, //Date.now(),
+    duedate: null,
     completed: false,
   };
   todoInput.value = "";
@@ -44,9 +42,7 @@ function addTodo() {
     },
     body: JSON.stringify(todo),
   })
-    .then((res) => {
-      return res.json();
-    })
+    .then((res) => res.json())
     .then((data) => {
       todos.push(data);
       displayTodos();
@@ -137,10 +133,10 @@ function addDate(todo) {
 }
 
 function addSubmitBtn(todo) {
-  const editBtn = document.createElement("button");
-  editBtn.textContent = "Submit";
-  editBtn.onclick = () => submitTodo(todo);
-  return editBtn;
+  const submitBtn = document.createElement("button");
+  submitBtn.textContent = "Submit";
+  submitBtn.onclick = () => submitTodo(todo);
+  return submitBtn;
 }
 
 function submitTodo(todo) {

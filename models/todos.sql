@@ -1,10 +1,13 @@
+-- Create database
+CREATE DATABASE <database_name>;
+
 -- From psql console connecting to a certain database
 \c todos
 
 -- Listing all the databases 
 \l
 
--- Listing all the table in the path
+-- Listing all the tables in the path
 \dt
 
 -- Creating a table(database) from psql console
@@ -13,7 +16,7 @@ CREATE TABLE todos_table (
     item TEXT NOT NULL,
     priority TEXT,
     notes TEXT,
-    duedate TIMESTAMP,
+    duedate TIMESTAMP WITH TIME ZONE,
     completed boolean NOT NULL 
 );
 
